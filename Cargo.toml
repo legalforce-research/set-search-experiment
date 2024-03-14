@@ -11,3 +11,6 @@ anyhow = "1.0.81"
 approx = "0.5.1"
 rand = "0.8.5"
 rand_xoshiro = "0.6.0"
+
+[workspace]
+members = ["tools"]
