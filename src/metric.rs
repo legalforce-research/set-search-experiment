@@ -64,7 +64,6 @@ where
         self.length_bounds = Self::length_bounds(self.base.len(), threshold);
     }
 
-    /// Computes the similarity threshold from the radius.
     fn threshold(radius: f32) -> f32 {
         1.0 - radius.max(0.0).min(1.0)
     }
