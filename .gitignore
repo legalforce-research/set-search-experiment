@@ -25,5 +25,6 @@ figs/
 data/gutenberg.db.txt
 data/gutenberg.query.txt
 gutenberg.db.json
+eval.json
 range-search-result.json
 topk-search-result.json
