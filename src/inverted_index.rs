@@ -45,8 +45,8 @@ impl InvertedIndex {
 
     pub fn range_query(&self, query: &OrderedSet<u32>) -> Vec<Answer> {
         let query = self.mapping.apply(query);
-        let query_len = query.len() as f32;
-        let pfx_len = Self::query_prefix_len(query_len, self.threshold);
+        let set_len = query.len() as f32;
+        let pfx_len = Self::query_prefix_len(set_len, self.threshold);
 
         let mut answers = Vec::new();
         let mut deduplicator = HashSet::new();
