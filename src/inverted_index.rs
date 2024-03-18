@@ -13,10 +13,12 @@ pub struct InvertedIndex {
     mapping: Mapping,
     records: Vec<Record<u32>>,
     index: HashMap<u32, Vec<u32>>,
+    threshold: f32,
 }
 
 impl InvertedIndex {
-    pub fn from_records(records: &[Record<u32>], universe: u32) -> Result<Self> {
+    pub fn from_records(records: &[Record<u32>], universe: u32, radius: f32) -> Result<Self> {
+        let threshold = Self::threshold(radius);
         let mapping = Mapping::from_records(records, universe)?;
         let records = records
             .iter()
@@ -27,7 +29,9 @@ impl InvertedIndex {
             .collect::<Vec<_>>();
         let mut index = HashMap::new();
         for (i, record) in records.iter().enumerate() {
-            for &elem in record.set.iter() {
+            let set_len = record.set.len() as f32;
+            let pfx_len = Self::index_prefix_len(set_len, threshold);
+            for &elem in record.set.iter().take(pfx_len) {
                 index.entry(elem).or_insert_with(Vec::new).push(i as u32);
             }
         }
@@ -35,20 +39,19 @@ impl InvertedIndex {
             mapping,
             records,
             index,
+            threshold,
         })
     }
 
-    pub fn range_query(&self, query: &OrderedSet<u32>, radius: f32) -> Vec<Answer> {
+    pub fn range_query(&self, query: &OrderedSet<u32>) -> Vec<Answer> {
         let query = self.mapping.apply(query);
         let query_len = query.len() as f32;
-
-        let threshold = Self::threshold(radius);
-        let pfx_len = (query_len * (1. - threshold) / (1. + threshold)).floor() as usize + 1;
+        let pfx_len = Self::query_prefix_len(query_len, self.threshold);
 
         let mut answers = Vec::new();
         let mut deduplicator = HashSet::new();
 
-        let jaccard = Jaccard::new(&query, radius, FILTER_CONFIG);
+        let jaccard = Jaccard::new(&query, 1. - self.threshold, FILTER_CONFIG);
 
         for elem in query.iter().take(pfx_len) {
             if let Some(list) = self.index.get(elem) {
@@ -71,9 +74,16 @@ impl InvertedIndex {
         answers
     }
 
-    /// Computes the similarity threshold from the radius.
     fn threshold(radius: f32) -> f32 {
         1.0 - radius.max(0.0).min(1.0)
+    }
+
+    fn index_prefix_len(set_len: f32, threshold: f32) -> usize {
+        (set_len * (1. - threshold) / (1. + threshold)).floor() as usize + 1
+    }
+
+    fn query_prefix_len(set_len: f32, threshold: f32) -> usize {
+        (set_len * (1. - threshold)).floor() as usize + 1
     }
 }
 
@@ -91,10 +101,10 @@ mod tests {
             Record { id: 1, set: b },
             Record { id: 2, set: c },
         ];
-        let index = InvertedIndex::from_records(&records, 10).unwrap();
 
+        let index = InvertedIndex::from_records(&records, 10, 0.5).unwrap();
         let query = OrderedSet::from_sorted([1, 2, 3]).unwrap();
-        let answers = index.range_query(&query, 0.5);
+        let answers = index.range_query(&query);
         assert_eq!(
             answers,
             vec![
@@ -113,8 +123,9 @@ mod tests {
             ]
         );
 
+        let index = InvertedIndex::from_records(&records, 10, 0.3).unwrap();
         let query = OrderedSet::from_sorted([1, 2, 3]).unwrap();
-        let answers = index.range_query(&query, 0.3);
+        let answers = index.range_query(&query);
         assert_eq!(
             answers,
             vec![
@@ -129,8 +140,9 @@ mod tests {
             ]
         );
 
+        let index = InvertedIndex::from_records(&records, 10, 0.1).unwrap();
         let query = OrderedSet::from_sorted([1, 2, 3]).unwrap();
-        let answers = index.range_query(&query, 0.1);
+        let answers = index.range_query(&query);
         assert_eq!(
             answers,
             vec![Answer {
