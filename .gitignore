@@ -19,6 +19,7 @@ Cargo.lock
 /target
 
 # Manual
+.venv/
 .vscode/
 data/gutenberg.db.txt
 data/gutenberg.query.txt

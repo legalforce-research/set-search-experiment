@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import ScalarFormatter
 import numpy as np
 
-plt.style.use('seaborn-v0_8')
+plt.style.use("seaborn-v0_8")
 
 formatter = ScalarFormatter(useMathText=True)
 formatter.set_scientific(True)
@@ -27,33 +27,33 @@ def plot_length_distribution(lengths, out_dir, metadata):
 
     fig, ax = plt.subplots()
     ax.hist(lengths, bins=100, range=(0, top_n))
-    ax.axvline(x=mean, color='red', label=f'Mean = {mean:.0f} ± {stddev:.1f}')
-    ax.set_xlabel('Length')
-    ax.set_ylabel('Frequency')
+    ax.axvline(x=mean, color="red", label=f"Mean = {mean:.0f} ± {stddev:.1f}")
+    ax.set_xlabel("Length")
+    ax.set_ylabel("Frequency")
     ax.legend()
     fig.tight_layout()
-    max_n = metadata['max_n']
-    fig.savefig(f'{out_dir}/length_distribution.max_n={max_n}.png')
+    max_n = metadata["max_n"]
+    fig.savefig(f"{out_dir}/length_distribution.max_n={max_n}.png")
     plt.close(fig)
 
 
 def plot_elem_freq_distribution(elem_freqs, out_dir, metadata):
     fig, ax = plt.subplots()
     ax.plot(range(len(elem_freqs)), elem_freqs)
-    ax.set_yscale('log', base=10)
-    ax.set_xlabel('Elements')
-    ax.set_ylabel('Frequency')
+    ax.set_yscale("log", base=10)
+    ax.set_xlabel("Elements")
+    ax.set_ylabel("Frequency")
     ax.xaxis.set_major_formatter(formatter)
     fig.tight_layout()
-    max_n = metadata['max_n']
-    fig.savefig(f'{out_dir}/elem_freq_distribution.max_n={max_n}.png')
+    max_n = metadata["max_n"]
+    fig.savefig(f"{out_dir}/elem_freq_distribution.max_n={max_n}.png")
     plt.close(fig)
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('stat_json')
-    parser.add_argument('out_dir')
+    parser.add_argument("stat_json")
+    parser.add_argument("out_dir")
     args = parser.parse_args()
 
     os.makedirs(args.out_dir, exist_ok=True)
@@ -61,13 +61,13 @@ def main():
     with open(args.stat_json) as f:
         stats = json.load(f)
 
-    metadata = stats['metadata']
+    metadata = stats["metadata"]
     print(metadata)
 
-    lengths = stats['lengths']
+    lengths = stats["lengths"]
     plot_length_distribution(lengths, args.out_dir, metadata)
 
-    elem_freqs = stats['elem_freqs']
+    elem_freqs = stats["elem_freqs"]
     plot_elem_freq_distribution(elem_freqs, args.out_dir, metadata)
 
 

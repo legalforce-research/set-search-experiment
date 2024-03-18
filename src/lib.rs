@@ -1,3 +1,4 @@
+pub mod inverted_index;
 pub mod linear_scan;
 pub mod mapping;
 pub mod metric;
