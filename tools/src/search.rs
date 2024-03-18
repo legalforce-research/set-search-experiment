@@ -30,7 +30,6 @@ struct Metadata {
     radius: Option<f32>,
     topk: Option<usize>,
     length: bool,
-    prefix: bool,
     position: bool,
 }
 
@@ -74,9 +73,6 @@ struct Args {
     #[arg(short = 'L', long)]
     length: bool,
 
-    #[arg(short = 'P', long)]
-    prefix: bool,
-
     #[arg(short = 'S', long)]
     position: bool,
 
@@ -110,7 +106,6 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
         LinearScan::from_records(&records, extractor.universe())?.filter_config(FilterConfig {
             length: args.length,
-            prefix: args.prefix,
             position: args.position,
         })
     };
@@ -166,7 +161,6 @@ fn main() -> Result<(), Box<dyn Error>> {
             radius: args.radius,
             topk: args.topk,
             length: args.length,
-            prefix: args.prefix,
             position: args.position,
         },
         answers,

@@ -21,7 +21,6 @@ struct Output {
     metadata: Metadata,
     no_filter: Vec<Counter>,
     length_filter: Vec<Counter>,
-    prefix_filter: Vec<Counter>,
     position_filter: Vec<Counter>,
     all_filters: Vec<Counter>,
 }
@@ -107,7 +106,6 @@ fn main() -> Result<(), Box<dyn Error>> {
     eprintln!("Evaluating no filter...");
     let index = index.filter_config(FilterConfig {
         length: false,
-        prefix: false,
         position: false,
     });
     let no_filter = evaluate_range_search(&index, &queries, args.radius);
@@ -115,23 +113,13 @@ fn main() -> Result<(), Box<dyn Error>> {
     eprintln!("Evaluating length filter...");
     let index = index.filter_config(FilterConfig {
         length: true,
-        prefix: false,
         position: false,
     });
     let length_filter = evaluate_range_search(&index, &queries, args.radius);
 
-    eprintln!("Evaluating prefix filter...");
-    let index = index.filter_config(FilterConfig {
-        length: false,
-        prefix: true,
-        position: false,
-    });
-    let prefix_filter = evaluate_range_search(&index, &queries, args.radius);
-
     eprintln!("Evaluating position filter...");
     let index = index.filter_config(FilterConfig {
         length: false,
-        prefix: false,
         position: true,
     });
     let position_filter = evaluate_range_search(&index, &queries, args.radius);
@@ -139,7 +127,6 @@ fn main() -> Result<(), Box<dyn Error>> {
     eprintln!("Evaluating all filters...");
     let index = index.filter_config(FilterConfig {
         length: true,
-        prefix: true,
         position: true,
     });
     let all_filters = evaluate_range_search(&index, &queries, args.radius);
@@ -156,7 +143,6 @@ fn main() -> Result<(), Box<dyn Error>> {
         },
         no_filter,
         length_filter,
-        prefix_filter,
         position_filter,
         all_filters,
     };
@@ -189,7 +175,6 @@ fn evaluate_range_search(
         for eval in evals {
             match eval {
                 Evaluation::LengthFiltered => counter.length_filtered += 1,
-                Evaluation::PrefixFiltered => counter.prefix_filtered += 1,
                 Evaluation::PositionFiltered => counter.position_filtered += 1,
                 Evaluation::Verified => counter.verified += 1,
                 Evaluation::Undefined => counter.undefined += 1,

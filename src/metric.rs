@@ -8,14 +8,12 @@ use crate::set::OrderedSet;
 #[derive(Default, Debug, Clone, Copy)]
 pub struct FilterConfig {
     pub length: bool,
-    pub prefix: bool,
     pub position: bool,
 }
 
 #[derive(Debug, Clone, Copy)]
 pub enum Evaluation {
     LengthFiltered,
-    PrefixFiltered,
     PositionFiltered,
     Verified,
     Undefined,
@@ -28,7 +26,6 @@ impl PartialEq for Evaluation {
     fn eq(&self, other: &Self) -> bool {
         match (self, other) {
             (Self::LengthFiltered, Self::LengthFiltered) => true,
-            (Self::PrefixFiltered, Self::PrefixFiltered) => true,
             (Self::PositionFiltered, Self::PositionFiltered) => true,
             (Self::Verified, Self::Verified) => true,
             (Self::Undefined, Self::Undefined) => true,
@@ -158,33 +155,6 @@ where
         let mut j = 0;
         let mut intersection = 0;
 
-        // 2) Prefix filter
-        if cfg.prefix {
-            let a_pfx_len = (a.len() + 1).saturating_sub(overlap_threshold);
-            let b_pfx_len = (b.len() + 1).saturating_sub(overlap_threshold);
-            // dbg!(a_pfx_len, b_pfx_len);
-            while i < a_pfx_len && j < b_pfx_len {
-                let a_i = a.get(i).unwrap();
-                let b_j = b.get(j).unwrap();
-                match a_i.cmp(b_j) {
-                    Ordering::Equal => {
-                        intersection += 1;
-                        i += 1;
-                        j += 1;
-                    }
-                    Ordering::Less => {
-                        i += 1;
-                    }
-                    Ordering::Greater => {
-                        j += 1;
-                    }
-                }
-            }
-            if intersection == 0 {
-                return Evaluation::PrefixFiltered;
-            }
-        }
-
         while i < a.len() && j < b.len() {
             let a_i = a.get(i).unwrap();
             let b_j = b.get(j).unwrap();
@@ -201,7 +171,7 @@ where
                     j += 1;
                 }
             }
-            // 3) Position filter
+            // 2) Position filter
             if cfg.position {
                 let a_sfx_len = a.len() - i;
                 let b_sfx_len = b.len() - j;
@@ -240,7 +210,6 @@ mod tests {
     fn test_length_filter_1() {
         let cfg = FilterConfig {
             length: true,
-            prefix: false,
             position: false,
         };
 
@@ -265,7 +234,6 @@ mod tests {
     fn test_length_filter_2() {
         let cfg = FilterConfig {
             length: true,
-            prefix: false,
             position: false,
         };
 
@@ -287,97 +255,9 @@ mod tests {
     }
 
     #[test]
-    fn test_prefix_filter_1() {
-        let cfg = FilterConfig {
-            length: false,
-            prefix: true,
-            position: false,
-        };
-
-        // J(a,b) = 1 - 4/6 = 0.333...
-        let a = OrderedSet::<u32>::from_unsorted([1, 2, 3, 4, 5]);
-        let b = OrderedSet::<u32>::from_unsorted([2, 3, 4, 5, 6]);
-
-        // overlap_threshold = 5
-        // a_pfx_len = 1
-        // b_pfx_len = 1
-        assert_eq!(
-            Jaccard::new(&a, 0.33, cfg).evaluate(&b),
-            Evaluation::PrefixFiltered
-        );
-
-        // overlap_threshold = 4
-        // a_pfx_len = 2
-        // b_pfx_len = 2
-        assert_eq!(
-            Jaccard::new(&a, 0.34, cfg).evaluate(&b),
-            Evaluation::Accepted(1. / 3.)
-        );
-    }
-
-    #[test]
-    fn test_prefix_filter_2() {
-        let cfg = FilterConfig {
-            length: false,
-            prefix: true,
-            position: false,
-        };
-
-        // J(a,b) = 1 - 4/6 = 0.333...
-        let a = OrderedSet::<u32>::from_unsorted([2, 3, 4, 5, 6]);
-        let b = OrderedSet::<u32>::from_unsorted([2, 3, 4, 5, 7]);
-
-        // overlap_threshold = 5
-        // a_pfx_len = 1
-        // b_pfx_len = 1
-        assert_eq!(
-            Jaccard::new(&a, 0.33, cfg).evaluate(&b),
-            Evaluation::Verified
-        );
-
-        // overlap_threshold = 4
-        // a_pfx_len = 2
-        // b_pfx_len = 2
-        assert_eq!(
-            Jaccard::new(&a, 0.34, cfg).evaluate(&b),
-            Evaluation::Accepted(1. / 3.)
-        );
-    }
-
-    #[test]
-    fn test_prefix_filter_3() {
-        let cfg = FilterConfig {
-            length: false,
-            prefix: true,
-            position: false,
-        };
-
-        // J(a,b) = 1 - 1/3 = 0.666...
-        let a = OrderedSet::<u32>::from_unsorted([1]);
-        let b = OrderedSet::<u32>::from_unsorted([1, 2, 3]);
-
-        // overlap_threshold = 2
-        // a_pfx_len = 0
-        // b_pfx_len = 2
-        assert_eq!(
-            Jaccard::new(&a, 0.66, cfg).evaluate(&b),
-            Evaluation::PrefixFiltered
-        );
-
-        // overlap_threshold = 1
-        // a_pfx_len = 1
-        // b_pfx_len = 3
-        assert_eq!(
-            Jaccard::new(&a, 0.67, cfg).evaluate(&b),
-            Evaluation::Accepted(2. / 3.)
-        );
-    }
-
-    #[test]
     fn test_position_filter_1() {
         let cfg = FilterConfig {
             length: false,
-            prefix: false,
             position: true,
         };
 
@@ -408,7 +288,6 @@ mod tests {
     fn test_position_filter_2() {
         let cfg = FilterConfig {
             length: false,
-            prefix: false,
             position: true,
         };
 
@@ -439,7 +318,6 @@ mod tests {
     fn test_position_filter_3() {
         let cfg = FilterConfig {
             length: false,
-            prefix: false,
             position: true,
         };
 
@@ -470,7 +348,6 @@ mod tests {
     fn test_identical() {
         let cfg = FilterConfig {
             length: true,
-            prefix: true,
             position: true,
         };
 
@@ -491,7 +368,6 @@ mod tests {
     fn test_one_side_empty() {
         let cfg = FilterConfig {
             length: true,
-            prefix: true,
             position: true,
         };
 
@@ -512,7 +388,6 @@ mod tests {
     fn test_undifined() {
         let cfg = FilterConfig {
             length: true,
-            prefix: true,
             position: true,
         };
 

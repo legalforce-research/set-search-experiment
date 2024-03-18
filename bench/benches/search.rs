@@ -20,27 +20,18 @@ const UNIVERSE: u32 = 1 << 20;
 const FILTER_CONFIGS: &[FilterConfig] = &[
     FilterConfig {
         length: false,
-        prefix: false,
         position: false,
     },
     FilterConfig {
         length: true,
-        prefix: false,
         position: false,
     },
     FilterConfig {
         length: false,
-        prefix: true,
-        position: false,
-    },
-    FilterConfig {
-        length: false,
-        prefix: false,
         position: true,
     },
     FilterConfig {
         length: true,
-        prefix: true,
         position: true,
     },
 ];
@@ -92,10 +83,9 @@ fn perform_range_search_linear_scan(
     for r in [0.1, 0.2, 0.5] {
         for &cfg in FILTER_CONFIGS {
             let l = usize::from(cfg.length);
-            let p = usize::from(cfg.prefix);
             let s = usize::from(cfg.position);
             index = index.filter_config(cfg);
-            let group_id = format!("N={max_n}_n={n}_m={m}_r={r}/L={l}_P={p}_S={s}");
+            let group_id = format!("N={max_n}_n={n}_m={m}_r={r}/L={l}_S={s}");
             group.bench_function(group_id, |b| {
                 b.iter(|| {
                     for query in &queries {
