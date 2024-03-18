@@ -13,6 +13,7 @@ use std::cmp::PartialOrd;
 
 use approx::abs_diff_eq;
 
+pub use inverted_index::InvertedIndex;
 pub use linear_scan::LinearScan;
 pub use mapping::Mapping;
 pub use metric::FilterConfig;
