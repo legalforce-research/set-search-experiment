@@ -6,7 +6,6 @@ import statistics
 def counts_foreach(logs):
     keys = [
         "length_filtered",
-        "prefix_filtered",
         "position_filtered",
         "verified",
         "undefined",
@@ -28,12 +27,10 @@ def main():
     counts = counts_foreach(all_filters)
 
     length_filtered = sum(counts["length_filtered"])
-    prefix_filtered = sum(counts["prefix_filtered"])
     position_filtered = sum(counts["position_filtered"])
-    total_filtered = length_filtered + prefix_filtered + position_filtered
+    total_filtered = length_filtered + position_filtered
 
     print(f"length_filtered_ratio: {length_filtered / total_filtered:.3f}")
-    print(f"prefix_filtered_ratio: {prefix_filtered / total_filtered:.3f}")
     print(f"position_filtered_ratio: {position_filtered / total_filtered:.3f}")
 
     verified = sum(counts["verified"])
