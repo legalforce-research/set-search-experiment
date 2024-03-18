@@ -73,7 +73,7 @@ struct Args {
     #[arg(short = 'L', long)]
     length: bool,
 
-    #[arg(short = 'S', long)]
+    #[arg(short = 'P', long)]
     position: bool,
 
     #[arg(long)]

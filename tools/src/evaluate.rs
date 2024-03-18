@@ -39,7 +39,6 @@ struct Metadata {
 #[derive(Default, Debug, Serialize)]
 struct Counter {
     length_filtered: usize,
-    prefix_filtered: usize,
     position_filtered: usize,
     verified: usize,
     undefined: usize,

@@ -42,11 +42,11 @@ $ python scripts/plot_stats.py gutenberg.db.json figs
 ## Search tools
 
 ```shell
-$ cargo run --release -p tools --bin search -- -d data/gutenberg.db.txt -q data/gutenberg.query.txt -o range-search-result.json -r 0.5 -L -S
+$ cargo run --release -p tools --bin linear_search -- -d data/gutenberg.db.txt -q data/gutenberg.query.txt -o range-search-result.json -r 0.5 -L -P
 ```
 
 ```shell
-$ cargo run --release -p tools --bin search -- -d data/gutenberg.db.txt -q data/gutenberg.query.txt -o topk-search-result.json -k 3 -L -S
+$ cargo run --release -p tools --bin linear_search -- -d data/gutenberg.db.txt -q data/gutenberg.query.txt -o topk-search-result.json -k 3 -L -P
 ```
 
 ## Evaluate

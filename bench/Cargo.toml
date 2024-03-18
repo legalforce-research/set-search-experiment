@@ -8,7 +8,6 @@ edition = "2021"
 [dev-dependencies]
 criterion = { version = "0.5.1", features = ["html_reports"] }
 set-search-experiment = { path = ".." }
-zstd = "0.13.0"
 
 [[bench]]
 name = "search"

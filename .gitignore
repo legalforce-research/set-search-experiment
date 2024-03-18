@@ -21,5 +21,9 @@ Cargo.lock
 # Manual
 .venv/
 .vscode/
+figs/
 data/gutenberg.db.txt
 data/gutenberg.query.txt
+gutenberg.db.json
+range-search-result.json
+topk-search-result.json
