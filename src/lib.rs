@@ -17,7 +17,6 @@ pub use mapping::Mapping;
 pub use metric::FilterConfig;
 pub use set::OrderedSet;
 
-/// Search result.
 #[derive(Debug, Clone)]
 pub struct Answer {
     pub id: u32,
