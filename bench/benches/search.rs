@@ -15,7 +15,7 @@ const DATABASE_TXT: &str = include_str!("../../data/gutenberg.db.txt");
 const QUERY_TXT: &str = include_str!("../../data/gutenberg.query.txt");
 
 const SEED: u64 = 42;
-const MAX_N: usize = 3;
+const MAX_N: usize = 1;
 const UNIVERSE: u32 = 1 << 20;
 
 const FILTER_CONFIGS: &[FilterConfig] = &[
