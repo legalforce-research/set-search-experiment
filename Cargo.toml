@@ -1,0 +1,17 @@
+[package]
+name = "set-search-experiment"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+ahash = "0.8.11"
+anyhow = "1.0.81"
+approx = "0.5.1"
+hashbrown = "0.14.3"
+rand = "0.8.5"
+rand_xoshiro = "0.6.0"
+
+[workspace]
+members = ["bench", "tools"]

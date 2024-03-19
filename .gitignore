@@ -12,3 +12,19 @@ Cargo.lock
 
 # MSVC Windows builds of rustc generate these, which store debugging information
 *.pdb
+
+
+# Added by cargo
+
+/target
+
+# Manual
+.venv/
+.vscode/
+figs/
+data/gutenberg.db.txt
+data/gutenberg.query.txt
+gutenberg.db.json
+eval.json
+range-search-result.json
+topk-search-result.json
