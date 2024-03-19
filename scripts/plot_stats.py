@@ -40,6 +40,7 @@ def plot_length_distribution(lengths, out_dir, metadata):
 def plot_elem_freq_distribution(elem_freqs, out_dir, metadata):
     fig, ax = plt.subplots()
     ax.plot(range(len(elem_freqs)), elem_freqs)
+    ax.set_xscale("log", base=10)
     ax.set_yscale("log", base=10)
     ax.set_xlabel("Elements")
     ax.set_ylabel("Frequency")
