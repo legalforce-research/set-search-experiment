@@ -16,8 +16,8 @@ name = "stats"
 path = "src/stats.rs"
 
 [[bin]]
-name = "linear_search"
-path = "src/linear_search.rs"
+name = "search"
+path = "src/search.rs"
 
 [[bin]]
 name = "evaluate"
