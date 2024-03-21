@@ -38,7 +38,9 @@ $ ./unpack.sh
 Check the dataset statistics:
 
 ```shell
-$ cargo run --release -p tools --bin stats -- -i data/gutenberg.db.txt -o gutenberg.db.json
+$ cargo run --release -p tools --bin stats -- \
+  -i data/gutenberg.db.txt \
+  -o gutenberg.db.json
 $ python3 scripts/plot_stats.py gutenberg.db.json figs
 $ ls -1 figs
 elem_freq_distribution.max_n=1.png
@@ -68,7 +70,11 @@ $ cargo run --release -p tools --bin search -- \
 Evaluate the filtering performance:
 
 ```shell
-$ cargo run --release -p tools --bin evaluate -- -d data/gutenberg.db.txt -q data/gutenberg.query.txt -o eval.json -r 0.5
+$ cargo run --release -p tools --bin evaluate -- \
+  -d data/gutenberg.db.txt \
+  -q data/gutenberg.query.txt \
+  -o eval.json \
+  -r 0.5
 $ python3 scripts/parse_eval.py eval.json
 ```
 
